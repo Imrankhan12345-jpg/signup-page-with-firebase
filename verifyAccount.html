@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Account</title>
+    
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #050814;
+            --card-bg: rgba(10, 15, 30, 0.82);
+            --card-border: rgba(56, 189, 248, 0.25);
+            --text-primary: #f8fafc;
+            --text-secondary: #38bdf8;
+            --text-muted: #64748b;
+            --input-bg: rgba(30, 41, 59, 0.45);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --input-focus-border: rgba(56, 189, 248, 0.6);
+            --primary-btn-bg: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 50%, #4f46e5 100%);
+            --toggle-bg: rgba(15, 23, 42, 0.85);
+            --toggle-border: rgba(56, 189, 248, 0.3);
+            --toggle-hover: rgba(30, 41, 59, 1);
+            --badge-bg: rgba(56, 189, 248, 0.12);
+            --badge-border: rgba(56, 189, 248, 0.3);
+            --glow-1: #00d2ff;
+            --glow-2: #6366f1;
+            --glow-opacity: 0.35;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #edf2f7;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --card-border: rgba(37, 99, 235, 0.2);
+            --text-primary: #0f172a;
+            --text-secondary: #2563eb;
+            --text-muted: #64748b;
+            --input-bg: rgba(241, 245, 249, 0.9);
+            --input-border: rgba(37, 99, 235, 0.2);
+            --input-focus-border: rgba(37, 99, 235, 0.6);
+            --primary-btn-bg: linear-gradient(135deg, #0284c7 0%, #2563eb 50%, #4338ca 100%);
+            --toggle-bg: #ffffff;
+            --toggle-border: #cbd5e1;
+            --toggle-hover: #e0e7ff;
+            --badge-bg: rgba(37, 99, 235, 0.08);
+            --badge-border: rgba(37, 99, 235, 0.25);
+            --glow-1: #38bdf8;
+            --glow-2: #818cf8;
+            --glow-opacity: 0.25;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.35s ease, border-color 0.35s ease, color 0.25s ease, box-shadow 0.35s ease, transform 0.25s ease;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background Glowing Orbs */
+        .ambient-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: var(--glow-opacity);
+            z-index: 0;
+            pointer-events: none;
+            animation: pulseGlow 8s ease-in-out infinite alternate;
+        }
+        .glow-1 { top: -100px; left: -100px; background: radial-gradient(circle, var(--glow-1), #0284c7); }
+        .glow-2 { bottom: -100px; right: -100px; background: radial-gradient(circle, var(--glow-2), #8b5cf6); animation-delay: -4s; }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.15) translate(30px, -20px); }
+        }
+
+        /* Top Bar Controls */
+        .top-nav-bar {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            right: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .top-nav-bar * {
+            pointer-events: auto;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: var(--toggle-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--toggle-border);
+            border-radius: 14px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-btn:hover {
+            transform: translateX(-3px);
+            border-color: var(--text-secondary);
+            color: var(--text-secondary);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .theme-toggle-btn {
+            background: var(--toggle-bg);
+            border: 1px solid var(--toggle-border);
+            color: var(--text-primary);
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--toggle-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.25);
+        }
+
+        /* Glassmorphism Main Container Card */
+        .container {
+            width: 100%;
+            max-width: 460px;
+            background: var(--card-bg);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid var(--card-border);
+            border-radius: 32px;
+            padding: 2.8rem 2.2rem;
+            box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .user-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--badge-bg);
+            border: 1px solid var(--badge-border);
+            color: var(--text-secondary);
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.3px;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .input-group i.input-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+            transition: color 0.3s ease;
+            pointer-events: none;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem 2.8rem 1rem 3rem;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            outline: none;
+        }
+
+        .input-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-group input:focus {
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+        }
+
+        .input-group input:focus ~ i.input-icon {
+            color: var(--text-secondary);
+        }
+
+        /* Password Eye Icon Toggle */
+        .toggle-password {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-secondary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary-btn-bg);
+            color: #ffffff;
+            border: none;
+            padding: 1rem;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.98rem;
+            cursor: pointer;
+            margin-top: 0.8rem;
+            box-shadow: 0 8px 24px -4px rgba(0, 210, 255, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+            box-shadow: 0 12px 28px -2px rgba(0, 210, 255, 0.45);
+        }
+
+        .btn-submit:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .custom-toast {
+            min-width: 280px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-left: 4px solid #ef4444;
+        }
+
+        @media (max-width: 600px) {
+            .top-nav-bar { top: 1.2rem; left: 1.2rem; right: 1.2rem; }
+            .container { padding: 2.2rem 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Glowing Background Effect -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <div id="toast-container"></div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav-bar">
+        <a href="passwordChange.html" class="back-btn" title="Back to Password Change">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Theme">
+            <i class="fa-solid fa-moon" id="themeIcon"></i>
+            <span id="themeText">Dark</span>
+        </button>
+    </div>
+
+    <!-- Main Verify Form Card -->
+    <div class="container">
+        <!-- User Badge Display -->
+        <div id="userDisplay" class="user-badge">
+            <i class="fa-solid fa-user-check"></i> Account: <span id="userName">Loading...</span>
+        </div>
+
+        <h2 class="title">Verify Account</h2>
+        <p class="subtitle">Enter registered email & password to verify identity</p>
+
+        <form id="verifyForm" onsubmit="return false;">
+            <!-- Current Email Input -->
+            <div class="input-group">
+                <input type="email" id="authEmail" placeholder="Enter Registered Email" autocomplete="off">
+                <i class="fa-solid fa-envelope input-icon"></i>
+            </div>
+
+            <!-- Current Password Input -->
+            <div class="input-group">
+                <input type="password" id="authPassword" placeholder="Enter Current Password" autocomplete="off">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <i class="fa-solid fa-eye toggle-password" id="togglePassIcon" onclick="togglePasswordVisibility()"></i>
+            </div>
+
+            <button type="submit" class="btn-submit" id="verifyBtn" disabled>
+                <span>Verify & Continue</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script src="./verifyAccount.js"></script>
+</body>
+</html>
